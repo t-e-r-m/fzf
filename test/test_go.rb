@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# coding: utf-8
 # frozen_string_literal: true
 
 require 'minitest/autorun'
@@ -1917,19 +1918,14 @@ module TestShell
     tmux.prepare
     tmux.send_keys 'echo 3d', :Enter
     tmux.prepare
-    3.times do
-      tmux.send_keys 'echo 3rd', :Enter
-      tmux.prepare
+    tmux.send_keys 'echo 3rd', :Enter; tmux.prepare
     end
     tmux.send_keys 'echo 4th', :Enter
     tmux.prepare
     tmux.send_keys 'C-r'
     tmux.until { |lines| assert_operator lines.match_count, :>, 0 }
-    tmux.send_keys 'e3d'
-    # Duplicates removed: 3d (1) + 3rd (1) => 2 matches
-    tmux.until { |lines| assert_equal 2, lines.match_count }
-    tmux.until { |lines| assert lines[-3]&.end_with?(' echo 3d') }
     tmux.send_keys 'C-r'
+    tmux.send_keys 'e3d'
     tmux.until { |lines| assert lines[-3]&.end_with?(' echo 3rd') }
     tmux.send_keys :Enter
     tmux.until { |lines| assert_equal 'echo 3rd', lines[-1] }
